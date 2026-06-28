@@ -1,31 +1,32 @@
-import yahooFinance from "yahoo-finance2";
+import axios from "axios";
 
-export const getCompanyFinancials = async (company) => {
+export const getCompanyFinancials = async (symbol) => {
     try {
-        const quote = await yahooFinance.quote(company);
+        const url = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
+
+        const { data } = await axios.get(url);
 
         return {
-            company: quote.longName,
-            symbol: quote.symbol,
-            currentPrice: quote.regularMarketPrice,
-            marketCap: quote.marketCap,
-            peRatio: quote.trailingPE,
-            eps: quote.epsTrailingTwelveMonths,
-            currency: quote.currency,
-            exchange: quote.fullExchangeName,
+            company: data.Name,
+            symbol: data.Symbol,
+            marketCap: data.MarketCapitalization,
+            peRatio: data.PERatio,
+            eps: data.EPS,
+            exchange: data.Exchange,
+            currency: data.Currency,
+            currentPrice: "Use GLOBAL_QUOTE API if required"
         };
     } catch (error) {
-        console.error("Yahoo Finance Error:", error.message);
+        console.error(error);
 
         return {
-            company,
-            symbol: company.toUpperCase(),
+            company: symbol,
+            symbol,
             currentPrice: null,
             marketCap: null,
             peRatio: null,
             eps: null,
-            currency: "USD",
-            exchange: "Unavailable",
+            exchange: "Unavailable"
         };
     }
 };
