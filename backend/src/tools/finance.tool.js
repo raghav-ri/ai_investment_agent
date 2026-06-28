@@ -1,18 +1,8 @@
-import YahooFinance from "yahoo-finance2";
-
-const yahooFinance = new YahooFinance();
+import yahooFinance from "yahoo-finance2";
 
 export const getCompanyFinancials = async (company) => {
     try {
-        const search = await yahooFinance.search(company);
-
-        if (!search.quotes || search.quotes.length === 0) {
-            throw new Error("Company not found");
-        }
-
-        const symbol = search.quotes[0].symbol;
-
-        const quote = await yahooFinance.quote(symbol);
+        const quote = await yahooFinance.quote(company);
 
         return {
             company: quote.longName,
@@ -21,12 +11,21 @@ export const getCompanyFinancials = async (company) => {
             marketCap: quote.marketCap,
             peRatio: quote.trailingPE,
             eps: quote.epsTrailingTwelveMonths,
-            sector: quote.sector,
-            industry: quote.industry,
             currency: quote.currency,
-            exchange: quote.fullExchangeName
+            exchange: quote.fullExchangeName,
         };
     } catch (error) {
-        throw error;
+        console.error("Yahoo Finance Error:", error.message);
+
+        return {
+            company,
+            symbol: company.toUpperCase(),
+            currentPrice: null,
+            marketCap: null,
+            peRatio: null,
+            eps: null,
+            currency: "USD",
+            exchange: "Unavailable",
+        };
     }
 };
