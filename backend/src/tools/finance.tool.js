@@ -15,7 +15,16 @@ export const getCompanyFinancials = async (company) => {
             throw new Error("Company not found");
         }
 
-        const symbol = matches[0]["1. symbol"];
+        const bestMatch =
+    matches.find(
+        (item) =>
+            item["4. region"] === "United States" &&
+            item["1. symbol"] === "TSLA"
+    ) ||
+    matches.find((item) => item["4. region"] === "United States") ||
+    matches[0];
+
+const symbol = bestMatch["1. symbol"];
 
         // Company Overview
         const overviewURL =
